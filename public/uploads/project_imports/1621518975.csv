@@ -1,0 +1,4 @@
+id,project_id,title,rooms,covered_area,price,monthly_installment,down_payment,payment_plan_img,floor_plan_img,description
+3,1,TYPE A,2 Bedroom,1090,10464000,275000,2100000,payment_plan_1621511461.png,floor_plan_1621511461.png,1090 SQ.FT THEME PARK FACING CORNER APARTMENTS
+4,1,TYPE B,2 Bedrroom,1020,9800000,260000,1152000,payment_plan_1621511719.png,floor_plan_1621511719.png,1020 SQ.FT THEME PARK FACING CORNER APARTMENTS
+5,1,TYPE C,1 Bedroom,600,5760000,150000,1152000,payment_plan_1621511880.png,floor_plan_1621511880.png,600 SQ.FT THEME PARK FACING

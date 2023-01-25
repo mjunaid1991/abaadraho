@@ -1,0 +1,7 @@
+title
+Apartments
+Villas
+Commercials
+Plots
+Bungalows
+Offices

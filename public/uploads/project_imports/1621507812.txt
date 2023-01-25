@@ -1,0 +1,9 @@
+name
+Apartments
+Villas
+Commercials
+Plots
+Bungalows
+Offices
+
+

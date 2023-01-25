@@ -1,0 +1,2 @@
+name,address,rooms,area,latitude,longitude,project_type_id,progress,project_doc,project_cover_img,project_imgs,details,min_price,slug,installment_length
+Anika Heights,"PLOT : 58-59 LIBERTY COMMERCIAL, OPPOSITE THEME PARK, BAHRIA TOWN ,KARACHI",1 & 2 Bedroom,17,45,65,1,completed,1621509671.pdf,cover_1621509671.png,1621509671_Villa-The_Valley_-_Eden-46707-1609678390159.jpeg|1621509671_mobileimg1-1.png,GREAT INVESTMENT OPPORTUNITY,0,anika-heights,0
