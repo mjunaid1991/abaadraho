@@ -471,9 +471,10 @@ class ProjectController extends BaseController
             });
         }
 
-        // return projects based on search parameters
+       // return projects based on search parameters
 
-        $popular_projects = Activity::where('conversion', 'View Page')->pluck('conversion');
+         $popular_projects = Activity::where('conversion', 'View Page')->pluck('conversion');
+
 
         // dd($popular_projects);
 

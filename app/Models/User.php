@@ -21,7 +21,7 @@ use Spatie\Activitylog\Contracts\Activity;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, LogsActivity; //LogsActivity
+    use HasFactory, Notifiable; //LogsActivity
     use CanRedeemVouchers;
     /**
      * The attributes that are mass assignable.
@@ -182,6 +182,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo('App\Models\User_type', 'user_type_id');
     }
+
+
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
