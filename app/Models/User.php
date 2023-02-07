@@ -21,7 +21,7 @@ use Spatie\Activitylog\Contracts\Activity;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable; //LogsActivity
+    use HasFactory, Notifiable, LogsActivity; //LogsActivity
     use CanRedeemVouchers;
     /**
      * The attributes that are mass assignable.
