@@ -182,9 +182,6 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo('App\Models\User_type', 'user_type_id');
     }
-
-
-
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
