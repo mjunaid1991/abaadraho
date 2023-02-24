@@ -253,7 +253,7 @@
                 <td>{{ $project->address }} Star</td>
                 <td>
                   @foreach ($project->areas as $area)
-                    {{ $area->Area->name }} {{ !$loop->last ? ', ' : '' }}
+                  {{ $area->Area->name ?? '' }} {{ !$loop->last ? ', ' : '' }}
                   @endforeach
                 </td>
                 {{-- <td>{{ $project->location->name }}</td> --}}

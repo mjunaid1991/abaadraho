@@ -376,7 +376,7 @@
                                                                 <li>
                                                                     @if ($unit->unit_type_id != 0)
                                                                         <p><span>
-                                                                                {{ $unit->type->title }}
+                                                                            {{ $unit->type->title ?? '' }}
                                                                             </span></p>
                                                                     @endif
                                                                 </li>
@@ -1272,9 +1272,7 @@
                         </div>
                     </div> -->
 
-                    <?php if ($user_voucher == true AND !empty($auth_id)) { ?>
-
-                    <?php } elseif ($user_voucher == false AND !empty($auth_id)) { ?>
+                    @if(count($voucher_available) > 0 && !empty($auth_id))
                         <div class="sidebar_listing_list">
                             <div class="sidebar_advanced_search_widget">
                                 @if (Session::has('message'))
@@ -1287,19 +1285,43 @@
                                         <h3>Get Your Voucher</h3>
                                     </div>
                                 </div>
-                                <form>
+                                <form method="POST" action="/projects/generate-voucher" >
+                                    @csrf
                                     <div class="row" style="font-size: 12px;">
+                                        @if ($voucher_available->first()->discount_applied == 'unit')
+                                            <div class="col-md-12">
+                                                <div class="form-group fv-plugins-icon-container">
+                                                    <label>Select Unit<span class="text-red">*</span></label>
+                                                    <select id="voucher_id" class="form-control form-control-lg" name="voucher_id" required>
+                                                        <option disabled selected hidden value="">Please select unit</option>
+                                                        @foreach ($voucher_available as $voucher)
+                                                        @php $voucher_id = $voucher->id @endphp
+                                                        @foreach ( $voucher->units_voucher as $selected_unit)
+                                                        <option value="{{ $voucher_id }}">{{ $selected_unit->unit->title }}</option>
+                                                        @endforeach
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>    
+                                        @endif
+
+                                        @if ($voucher_available->first()->discount_applied == 'project')
+                                            <input type="hidden" name="voucher_id" value="{{ $voucher_available->first()->id }}" required>
+                                        @endif
+                                        @error('voucher_id')
+                                            <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
+                                        @enderror
                                         <div class="col-md-12">
                                             <div class="search_option_button">
-                                                <a href="/projects/generate-voucher/{{ $project->id }}" type="btn" class="btn btn-block btn-thm"><i class="fa fa-paper-plane"></i> Get Your Voucher Code</a>
+                                                <button type="submit" class="btn btn-block btn-thm"><i class="fa fa-paper-plane"></i> Get Your Voucher Code</button>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
-
-                        <?php } elseif(is_null($auth_id)) { ?>
+                    @else 
+                        @if (is_null($auth_id))    
                         <div class="sidebar_listing_list">
                             <div class="sidebar_advanced_search_widget">
                                 @if (Session::has('message'))
@@ -1323,7 +1345,8 @@
                                 </form>
                             </div>
                         </div>
-                    <?php } ?>
+                        @endif
+                    @endif
                     
                     @if (!empty($recent_view_data))
                         @if ($recent_view_data->count())

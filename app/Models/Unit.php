@@ -83,4 +83,7 @@ class Unit extends Model
     {
         return $this->hasMany(PaymentSchedule::class);
     }
+    public function UnitVoucher() {
+        return $this->hasOne(UnitsVoucher::class,'unit_id');
+    }
 }

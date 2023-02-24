@@ -9,36 +9,45 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use App\Models\UserVoucher;
 use BeyondCode\Vouchers\Facades\Vouchers;
-use BeyondCode\Vouchers\Models\Voucher;
+// use BeyondCode\Vouchers\Models\Voucher;
 use BeyondCode\Vouchers\Rules\Voucher as RulesVoucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\AppHelper;
+use App\Models\Voucher;
+use App\Models\Unit;
+use App\Models\UnitsVoucher;
+use App\Models\Builder;
+use App\Models\ProjectOwners;
+use Illuminate\Support\Facades\Config;
+
 
 class VoucherController extends Controller
 {
-    public function index() {
-        // dd(Voucher::orderBy('id', 'desc')->first());
-        $status = [
-            'Active',
-            'Redeemed',
-        ];
-        
-        $voucherData = [];
-        $vouchers = Voucher::paginate(50);
-        
-        //dd($vouchers[0]->data['user_full_name']);
 
-        for ($i = 0; $i < count($vouchers); $i++) {
-            $arr = json_decode($vouchers[$i]->data, true);
-            //$arr["created_at"] = $vouchers->toArray()[$i]["created_at"];
-            // dd($arr);
-            array_push($voucherData , $arr);
-            // $paymentData = unserialize($paymentSchedules[$i]->json);
+    public function __construct()
+    {
+        $this->middleware('manage_user_types');
+    }
+
+    public function index() {
+        
+        $status = [
+            'Redeemed',
+            'Active'
+        ];
+        $vouchers = Voucher::with('project','units_voucher.unit');
+        if (Auth::user()->user_type_id == Config::get("constants.UserTypeIds.Builder"))
+        {
+            $Builder = Builder::where("user_id", Auth::user()->id)->first();
+            $BuilderProjectIds = ProjectOwners::where("builder_id", $Builder->id)->pluck("project_id");
+            $vouchers = $vouchers->whereIn("project_id", $BuilderProjectIds->toArray());
         }
-        return view('panel.admin.vouchers.index', compact('vouchers', 'voucherData', 'status'));
+        $vouchers = $vouchers->orderBy('id', 'DESC')->paginate(50);
+        return view('panel.admin.vouchers.index', compact('vouchers', 'status'));
+   
     }
 
     public function downloadedVoucherList(Request $request)
@@ -61,43 +70,99 @@ class VoucherController extends Controller
     }
 
     public function create() {
-        $projects = Project::all();
-        $data = User::all();
-        return view('panel.admin.vouchers.create', compact('projects','data'));
-    }
-    public function getdiscount() {
-        $id = $_GET['myID'];
-        $data = Project::find($id);
-        return response()->json($data);
+        $projects = Project::with('ProjectVoucher')->get();
+        return view('panel.admin.vouchers.create', compact('projects'));
     }
 
-    public function getcustomer() {
-        $id = $_GET['myID'];
-        $data = User::find($id);
-        return response()->json($data);
-    }
-    
     public function store(Request $request) {
-        $data = $request->only('code', 'user_full_name','user_email','user_phone', 'project_name', 'status', 'expires_at', 'project_discount');
-        dd($data);
-        $test['data'] = json_encode($data);
-        Voucher::insert($test);
-        return view('panel.admin.vouchers.create');
+
+        $validated = $request->validate([
+            'project_id'        =>   'required',
+            'name'              =>   'required',
+            'discount_by'       =>   'required',
+            'discount_applied'  =>   'required',
+            'discount_value'    =>   'required',
+            'code'              =>   'required|unique:vouchers',
+            'status'            =>   'required',
+            'expires_date'      =>   'required'
+        ]);
+
+        $voucher = Voucher::create([
+            'project_id'        =>   $request->project_id,
+            'name'              =>   $request->name,
+            'discount_by'       =>   $request->discount_by,
+            'discount_applied'  =>   $request->discount_applied,
+            'discount_value'    =>   $request->discount_value,
+            'code'              =>   $request->code,
+            'status'            =>   $request->status == "2" ?  '0' : '1',
+            'expires_at'        =>   $request->expires_date
+        ]);
+
+        if($request->discount_applied == "unit")
+        {
+            foreach($request->units as $unit)
+            {
+                $unit_voucher = UnitsVoucher::create([
+                    'voucher_id'   =>  $voucher->id,
+                    'unit_id'      =>  $unit
+                ]); 
+            }
+        }
+    
+        return redirect('admin/voucher');
     }
 
-    public function edit(Voucher $voucher) {
-        $status = [
-            'Active',
-            'Redeemed',
-        ];
-        return view('panel.admin.vouchers.edit', compact('voucher', 'status'));
+    public function getprojectunits($project_id) {
+        if(!empty($project_id)){
+            $data = Unit::with('UnitVoucher')->where('project_id', $project_id)->get();
+            return response()->json($data);
+        }
+    }
+
+    public function edit($id) {
+        $voucher = Voucher::with('units_voucher.unit', 'project.units')->find($id);
+        $projects = Project::with('ProjectVoucher')->get();
+        return view('panel.admin.vouchers.edit', compact('voucher', 'projects'));
     }
     
-    public function update(VoucherRequest $request, Voucher $voucher) {
-        $voucher->status = $request->status;
-        $voucher->expires_at = $request->expires_at;
+    public function update(Request $request, $id) {
+
+        $validated = $request->validate([
+            'project_id'        =>   'required',
+            'name'              =>   'required',
+            'discount_by'       =>   'required',
+            'discount_applied'  =>   'required',
+            'discount_value'    =>   'required',
+            'code'              =>   'required',
+            'status'            =>   'required',
+            'expires_date'      =>   'required'
+        ]);
+
+        $voucher = Voucher::find($id);
+        $voucher->project_id       =  $request->project_id;
+        $voucher->name             =  $request->name;
+        $voucher->discount_by      =  $request->discount_by;
+        $voucher->discount_applied =  $request->discount_applied;
+        $voucher->discount_value   =  $request->discount_value;
+        $voucher->code             =  $request->code;
+        $voucher->status           =  $request->status == "2" ?  '0' : '1';
+        $voucher->expires_at       =  $request->expires_date;
         $voucher->save();
         $voucher->touch();
+
+        $delete_voucher_units = UnitsVoucher::where('voucher_id',$id)->delete();
+
+        if($request->discount_applied == "unit")
+        {
+            foreach($request->units as $unit)
+            {
+                $unit_voucher = UnitsVoucher::create([
+                    'voucher_id'   =>  $voucher->id,
+                    'unit_id'      =>  $unit
+                ]); 
+            }
+        }
+
         return redirect('/admin/voucher');
     }
     

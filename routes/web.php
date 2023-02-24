@@ -164,11 +164,12 @@ Route::post('/admin/builder/delete', 'Admin\BuilderController@destroy');
 
 //Admin Vouchers
 Route::resource('admin/voucher', 'Admin\VoucherController', ['except' => ['destroy', 'show']]);
+Route::post('admin/voucher/store', 'Admin\VoucherController@store');
 Route::delete('admin/voucher/delete/{id}', 'Admin\VoucherController@destroy');
 Route::get('admin/downloaded-voucher', 'Admin\VoucherController@downloadedVoucherList');
 
-Route::get('getdiscount/{id}', 'Admin\VoucherController@getdiscount');
-Route::get('getcustomer/{id}', 'Admin\VoucherController@getcustomer');
+Route::get('getprojectunits/{id}', 'Admin\VoucherController@getprojectunits');
+
 
 // Admin Blog Category
 Route::resource('admin/blog_category', 'Admin\BlogCategoryController', ['except' => ['destroy', 'show']]);
@@ -255,7 +256,7 @@ Route::get('/user/wishlist/{item}/delete', 'FrontEnd\WishlistController@destroy'
 // created by Shahbaz Raza for new fiter work
 Route::get('/projects/getlistings', 'FrontEnd\ProjectController@filter')->name('getlistings');
 
-Route::get('/projects/generate-voucher/{id}', 'FrontEnd\ProjectController@generate_voucher');
+Route::post('/projects/generate-voucher', 'FrontEnd\ProjectController@generate_voucher');
 
 Route::get('/projects/listings', 'FrontEnd\ProjectListingController@index')->name("project.listing");
 

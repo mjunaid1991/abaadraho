@@ -71,13 +71,11 @@
                             <thead>
                                 <tr>
                                     <th title="Field #1" style="width:20px">#</th>
-                                    <th title="Field #2">Voucher Code</th>
-                                    <th title="Field #3">User Name</th>
-                                    <th title="Field #4">User Phone</th>
-                                    <th title="Field #5">User Email</th>
-                                    <th title="Field #6">Projects</th>
-                                    <th title="Field #6">Discount Price</th>
-                                    <th title="Field #7">Created Date</th>
+                                    <th title="Field #2">Code</th>
+                                    <th title="Field #3">Name</th>
+                                    <th title="Field #4">Project</th>
+                                    <th title="Field #5">Discount</th>
+                                    <th title="Field #6">Created Date</th>
                                     <th title="Field #7">Expiry Date</th>
                                     <th title="Field #8">Status</th>
                                     <th title="Field #9">Actions</th>
@@ -88,28 +86,40 @@
                                     <tr>
                                       <input type="hidden" class="serdelete_val" value="{{ $voucher->id }}">
                                       <td>{{ $loop->index + 1 }}</td>
-                                      <td>{{ !empty($voucher->code) ? $voucher->code : $vouchers[$key]->data['code'] }}
+                                      <td>{{ $voucher->code }}</td>
+                                      <td>{{ $voucher->name }}</td>
+                                      <td>{{ $voucher->project->name ?? '' }}
+                                        @if($voucher->discount_applied == 'unit')
+                                        <br>
+                                          @foreach ( $voucher->units_voucher as $selected_unit)
+                                            <span class="units-span">{{ $selected_unit->unit->title }}</span>
+                                          @endforeach
+                                        @endif
                                       </td>
-                                      <td>{{ !empty($voucherData[$loop->index]['user_full_name']) ? $voucherData[$loop->index]['user_full_name'] : '' }}</td>
-                                      <td>{{ !empty($voucherData[$loop->index]['user_phone']) ? $voucherData[$loop->index]['user_phone'] : '' }}</td>
-                                      <td>{{ !empty($voucherData[$loop->index]['user_email']) ? $voucherData[$loop->index]['user_email'] : '' }}</td>
-                                      <td>{{ !empty($voucherData[$loop->index]['project_name']) ? $voucherData[$loop->index]['project_name'] : '' }}</td>
-                                      <td>Rs
-                                          
+                                      <td>{{ $voucher->discount_by == 'amount' ? 'PKR.' : '' }}
+                                          {{ $voucher->discount_value }}
+                                          {{ $voucher->discount_by == 'percentage' ? ' %' :'' }}
                                       </td>
                                       <td>{{ $voucher->created_at }}</td>
-                                      <td>{{ !empty($voucher->expires_at) ? $voucher->expires_at : $vouchers[$key]->data['expires_at'] }}
-                                      </td>
-                                      <td>{{ $status[$voucher->status - 1] }}</td>
+                                      <td>{{ $voucher->expires_at }}</td>
+                                      <td>{{ $status[$voucher->status] }}</td>
                                       <td>
                                           <a href="/admin/voucher/{{ $voucher->id }}/edit"><i class="fa fa-edit ml-2"></i></a>
                                           <a href="/admin/voucher/delete/{{ $voucher->id }}"><i class="fa fa-trash servicedeletebutton"></i></a>
                                       </td>
                                     </tr>
                                 @endforeach
+                                @if (count($vouchers) >= 0)
+                                <tr>
+                                    <td colspan="9" style="text-align: center;">
+                                        <span class="datatable-error">No records found</span>
+                                    </td>
+                                </tr>
+                                @endif
                             </tbody>
                         </table>
                         <!--end: Datatable-->
+                        {{$vouchers->links()}}
                     </div>
                 </div>
                 <!--end::Card-->
@@ -128,6 +138,17 @@
         .datatable.datatable-default>.datatable-table>.datatable-head .datatable-row>.datatable-cell:nth-child(1)>span,
         .datatable.datatable-default>.datatable-table>.datatable-body .datatable-row>.datatable-cell:nth-child(1)>span {
             width: 40px !important;
+        }
+        .units-span{
+            padding: 2px 6px;
+            line-height: 24px;
+            border-radius: 4px;
+            background-color: #eb1f29;
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+            position: relative;
+            white-space: pre;
         }
     </style>
 @endsection

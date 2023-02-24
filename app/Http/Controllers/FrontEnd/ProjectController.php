@@ -8,6 +8,7 @@ use App\Models\Tag;
 use App\Models\Area;
 use App\Models\Unit;
 use App\Models\Project;
+use App\Models\Voucher;
 use Carbon\Traits\Units;
 use App\Models\ProjectType;
 use App\Models\RecentViews;
@@ -67,7 +68,10 @@ class ProjectController extends BaseController
     public function detail(Request $request, $slug)
     {
         $project = $this->ProjectModel->with('units', 'owners', 'location', 'project_info')->where('slug', $slug)->first();
-        $user_voucher = DB::table('user_voucher')->where('voucher_id', $project->id)->exists();
+        // $user_voucher = DB::table('user_voucher')->where('voucher_id', $project->id)->exists();
+        // $voucher_available = Voucher::where('project_id', $project->id)->exists();
+        $voucher_available = Voucher::with('project', 'units_voucher.unit')->where('project_id', $project->id)->get();
+        // dd(count($voucher_available) > 0);
         $auth_id = Auth::id();
         $view_key = 'project_'.$project->id;
         if(!request()->session()->has($view_key))
@@ -82,7 +86,6 @@ class ProjectController extends BaseController
         {
             $rating_value = $rating_sum/$ratings->count();
         }
-
         else
         {
             $rating_value = 0;
@@ -128,16 +131,16 @@ class ProjectController extends BaseController
         }
         $project->installment_length = $length;
 
-        /*
-         * Get Similar Projects
-         */
-
+        /* Get Similar Projects */
         $unit_type = array();
         foreach ($project->units as $key => $unit) {
             if ($unit->unit_type_id) {
                 $type = ProjectType::where('id', $unit->unit_type_id)->first();
-                $unit_type[$key]['id'] = $type->id;
-                $unit_type[$key]['title'] = $type->title;
+                if($type)
+                {
+                    $unit_type[$key]['id'] = $type->id;
+                    $unit_type[$key]['title'] = $type->title;    
+                }            
             }
         }
         $similar = $this->ProjectModel->with('units')->where('id', '!=', $project->id);
@@ -150,59 +153,77 @@ class ProjectController extends BaseController
             ->orWhere('rooms', 'like', '%' . 'rooms' . '%');
 
         $installment_length = InstallmentType::all();
-        return view('project.detail', compact('ratings', 'rating_value', 'project', 'similar', 'unit_type', 'installment_length', 'recent_view_data', 'total_months', 'user_voucher', 'auth_id'));
+        return view('project.detail', compact('ratings', 'rating_value', 'project', 'similar', 'unit_type', 'installment_length', 'recent_view_data', 'total_months', 'voucher_available', 'auth_id'));
     }
 
-    public function generate_voucher(Request $request, $id)
+    public function generate_voucher(Request $request)
     {
-        $isDownload = $request['download'];
+
+        $validated = $request->validate([
+            'voucher_id' => 'required',
+        ],
+        ['voucher_id.required' => 'Invalid argument try again.']);
+
+        $voucher_id = $request->voucher_id;
+        $voucher = Voucher::with('project', 'units_voucher.unit')->where('id', $voucher_id)->first();
 
         $user = User::where('id', Auth::id())->first();
-        $project = Project::where('id', $id)->first();
+
+        $pdf = PDF::loadView('panel.admin.vouchers.coupon', compact('voucher', 'user'));
+        return $pdf->download('Coupon.pdf');
+
+        // return $pdf->download('Coupon.pdf');
+        // return view('panel.admin.vouchers.coupon', compact('voucher'));
+        
+        // $isDownload = $request['download'];
+        // dd($isDownload);
+
+        // $user = User::where('id', Auth::id())->first();
+        // $project = Project::where('id', $id)->first();
         // dd($project);
        
-        $voucher = $project->createVoucher([
-            'user_full_name' => $user->first_name . " " . $user->last_name,
-            'user_email' => $user->email,
-            'user_phone' => $user->phone_number,
-            'project_name' => $project->name,
-            'project_cover_img' => $project->project_cover_img,
-            'project_discount' => $project->discount_price,
+        // $voucher = $project->createVoucher([
+        //     'user_full_name' => $user->first_name . " " . $user->last_name,
+        //     'user_email' => $user->email,
+        //     'user_phone' => $user->phone_number,
+        //     'project_name' => $project->name,
+        //     'project_cover_img' => $project->project_cover_img,
+        //     'project_discount' => $project->discount_price,
             
-        ], today()->addDays(7));
-        $code         = $voucher->code;
-        $user_full_name     = $voucher->data->get('user_full_name');
-        $user_email     = $voucher->data->get('user_email');
-        $user_phone     = $voucher->data->get('user_phone');
-        $project_name = $voucher->data->get('project_name');
-        $project_image = $voucher->data->get('project_cover_img');
-        $project_discount = $voucher->data->get('project_discount');
-        $expiry = $voucher->expires_at;
+        // ], today()->addDays(7));
+        // $code         = $voucher->code;
+        // $user_full_name     = $voucher->data->get('user_full_name');
+        // $user_email     = $voucher->data->get('user_email');
+        // $user_phone     = $voucher->data->get('user_phone');
+        // $project_name = $voucher->data->get('project_name');
+        // $project_image = $voucher->data->get('project_cover_img');
+        // $project_discount = $voucher->data->get('project_discount');
+        // $expiry = $voucher->expires_at;
        
 
-        view()->share('voucher_code',$code);
-        view()->share('user_name',$user_full_name);
-        view()->share('user_email',$user_email);
-        view()->share('user_phone',$user_phone);
-        view()->share('project_name',$project_name);
-        view()->share('project_discount',$project_discount);
-        view()->share('project_image', $project_image);
-        view()->share('project_expiry',$expiry);
-        view()->share('isDownload',$isDownload);
-        view()->share('project_id',$id);
+        // view()->share('voucher_code',$code);
+        // view()->share('user_name',$user_full_name);
+        // view()->share('user_email',$user_email);
+        // view()->share('user_phone',$user_phone);
+        // view()->share('project_name',$project_name);
+        // view()->share('project_discount',$project_discount);
+        // view()->share('project_image', $project_image);
+        // view()->share('project_expiry',$expiry);
+        // view()->share('isDownload',$isDownload);
+        // view()->share('project_id',$id);
 
-        if(!$isDownload) {
-            return view('panel.admin.vouchers.coupon');
-        } else {
-            $UserVoucher = UserVoucher::create([
-                'user_id'     => Auth::id(),
-                'voucher_id'  => $id,
-                'redeemed_at' => date('Y-m-d H:i:s'),
-            ]);
+        // if(!$isDownload) {
+        //     return view('panel.admin.vouchers.coupon');
+        // } else {
+        //     $UserVoucher = UserVoucher::create([
+        //         'user_id'     => Auth::id(),
+        //         'voucher_id'  => $id,
+        //         'redeemed_at' => date('Y-m-d H:i:s'),
+        //     ]);
 
-            $pdf = PDF::loadView('panel.admin.vouchers.coupon');
-            return $pdf->download('Coupon.pdf');
-        }
+        //     $pdf = PDF::loadView('panel.admin.vouchers.coupon');
+        //     return $pdf->download('Coupon.pdf');
+        // }
 
         // $pdf = PDF::loadView('panel.admin.vouchers.coupon');
         // return $pdf->stream('Coupon.pdf');

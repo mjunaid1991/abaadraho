@@ -150,4 +150,8 @@ class Project extends Model
     {
         return $this->hasMany(ProjectAmenities::class, "project_id");
     }
+    public function ProjectVoucher()
+    {
+        return $this->hasOne(Voucher::class, "project_id")->where('discount_applied','=', 'project');
+    }
 }

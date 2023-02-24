@@ -15,7 +15,8 @@
                     <!--end::Separator-->
                     <!--begin::Search Form-->
                     <div class="d-flex align-items-center" id="kt_subheader_search">
-                        <span class="text-dark-50 font-weight-bold" id="kt_subheader_total">Enter vouchers details and submit</span>
+                        <span class="text-dark-50 font-weight-bold" id="kt_subheader_total">Enter vouchers details and
+                            submit</span>
                     </div>
                     <!--end::Search Form-->
                 </div>
@@ -33,107 +34,136 @@
                         <h2 class="card-title text-uppercase">Create Voucher</h2>
                     </div>
                     <!--begin::Form-->
-
-                    <!-- enctype="multipart/form-data" remove by Shahbaz raza -->
-
-                    <form class="form mt-5" method="POST" action="/admin/voucher/" enctype="multipart/form-data">
-                        @csrf
-                        <div class="col-xl-12">
-                            <div class="form-group fv-plugins-icon-container">
-                                <label>Voucher Code <span class="text-red">*</span></label>
-                                <input type="text" class="form-control form-control-lg" name="code" required>
-                                <span class="form-text text-muted">Customer Voucher Code</span>
-                                @error('code')
-                                    <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
-                                @enderror
+                    <div class="card-body">
+                        <!-- enctype="multipart/form-data" remove by Shahbaz raza -->
+                        <form class="form mt-5" method="POST" action="/admin/voucher/store" enctype="multipart/form-data">
+                            @csrf
+                            <div class="col-xl-12">
+                                <div class="form-group fv-plugins-icon-container">
+                                    <label>Voucher Name<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" name="name" value="{{ old('name') }}" required>
+                                    <span class="form-text text-muted">Voucher Name</span>
+                                    @error('name')
+                                        <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
-
-                            <!-- <div class="form-group fv-plugins-icon-container">
-                                <label>Customer Name<span class="text-red">*</span></label>
-                                <input type="text" class="form-control form-control-lg" name="user_full_name" required>
-                                <span class="form-text text-muted">Please enter Customer Name</span>
-                                @error('data')
-                                    <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
-                                @enderror
-                            </div> -->
-                            
-                            <!-- <div class="form-group fv-plugins-icon-container">
-                                <label>Customer Phone<span class="text-red">*</span></label>
-                                <input type="number" class="form-control form-control-lg" name="user_phone" required>
-                                <span class="form-text text-muted">Please enter Customer Phone</span>
-                                @error('data')
-                                    <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
-                                @enderror
-                            </div> -->
-                            
-                            <div class="form-group fv-plugins-icon-container">
-                              <label>Customer Name<span class="text-red">*</span></label>
-                                <select id="firstname" class="form-control form-control-lg" name="user_full_name" required>
-                                  <option disabled selected hidden value="">Please select Customer</option>
-                                  @foreach($data as $voucher)
-                                  <option value="{{ $voucher->id }}">{{ $voucher->first_name }}</option>
-                                  @endforeach
-                                </select>
-                              {{-- <span class="form-text text-muted">Please enter Customer Name</span> --}}
-                              @error('data')
-                              <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
-                              @enderror
+                            <div class="col-xl-12">
+                                <div class="form-group fv-plugins-icon-container">
+                                    <label>Voucher Code<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" name="code" value="{{ old('code') }}" required>
+                                    <span class="form-text text-muted">Voucher Code</span>
+                                    @error('code')
+                                        <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
-
-                            <div class="form-group fv-plugins-icon-container">
-                                <label>Customer Phone<span class="text-red">*</span></label>
-                                <input type="text" id="phone" class="form-control" name="user_phone" disabled>
+                            <div class="col-xl-12">
+                                <div class="form-group fv-plugins-icon-container">
+                                    <label>Project Name<span class="text-red">*</span></label>
+                                    <select id="project_id" class="form-control form-control-lg" name="project_id" required>
+                                        <option disabled selected hidden value="">Please select Project</option>
+                                        @foreach ($projects as $project)
+                                            <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }} 
+                                                {{ !empty($project->ProjectVoucher->code) ? 'disabled' : '' }}>{{ $project->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="form-text text-muted">Project Name</span>
+                                    @error('project_id')
+                                        <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
-
-                            <div class="form-group fv-plugins-icon-container">
-                                <label>Customer Email<span class="text-red">*</span></label>
-                                <input type="text" id="email" class="form-control" name="user_email" disabled>
-                            </div>
-
-                            <div class="form-group fv-plugins-icon-container">
-                                <label>Project Name<span class="text-red">*</span></label>
-                                <select id="projectname" class="form-control form-control-lg" name="project_name" required>
-                                    <option disabled selected hidden value="">Please select Project</option>
-                                    @foreach($projects as $voucher)
-                                    <option value="{{ $voucher->id }}">{{ $voucher->name }}</option>
-                                    @endforeach
-                                </select>
-                                {{-- <span class="form-text text-muted">Project Name</span> --}}
-                                @error('data')
-                                    <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group fv-plugins-icon-container">
-                                <label>Discount price<span class="text-red">*</span></label>
-                                <input type="text" id="discount" class="form-control" name="project_discount">
-                            </div>
-
-                            <div class="form-group fv-plugins-icon-container">
-                                <label>Expiry<span class="text-red">*</span></label>
-                                <input type="data" id="datepicker" class="form-control form-control-lg" name="expires_at" autocomplete="no" required>
-                                <span class="form-text text-muted">Voucher Expiry Date</span>
-                                @error('expires_at')
-                                    <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <div class="">
-                                    <div class="form-group fv-plugins-icon-container">
-                                        <label>Status</label>
-                                        <select name="status" class="form-control form-control-lg" required>
-                                            <option disabled selected hidden value="">Status...</option>
-                                            <option value="1">Active</option>
-                                            <option value="2">Redeemed</option>
-                                        </select>
-                                        <span class="form-text text-muted">Please specify the status
-                                            of the voucher.</span>
-                                        <div class="fv-plugins-message-container"></div>
+                            <div class="col-xl-12">
+                                <div class="form-group fv-plugins-icon-container">
+                                    <label>Discount Apply<span class="text-red">*</span></label>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="custom-control custom-radio" style="padding-top: 20px">
+                                                <input type="radio" class="custom-control-input" id="project" name="discount_applied"
+                                                   value="project" required {{ old('discount_applied') == 'project' ? 'checked' : '' }}>
+                                                <label class="custom-control-label" for="project">Project</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="custom-control custom-radio" style="padding-top: 20px">
+                                                <input type="radio" class="custom-control-input" id="unit"
+                                                    name="discount_applied" value="unit" {{ old('discount_applied') == 'unit' ? 'checked' : 'checked' }} required>
+                                                <label class="custom-control-label" for="unit">Units</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 unit-container">
+                                            <div class="form-group fv-plugins-icon-container">
+                                                <label>Select Units<span class="text-red">*</span></label>
+                                                <select class="form-control select2" id="kt_select2_33" name="units[]" aria-placeholder="Select Units" multiple="multiple" required>
+                                                </select>
+                                                <span class="form-text text-muted">Please enter project units.</span>
+                                                <div class="fv-plugins-message-container text-danger"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="col-xl-12">
+                                <div class="form-group fv-plugins-icon-container">
+                                    <label>Discount<span class="text-red">*</span></label>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="custom-control custom-radio" style="padding-top: 20px">
+                                                <input type="radio" class="custom-control-input" id="amount" name="discount_by"
+                                                   value="amount" required {{ old('discount_by') == 'amount' ? 'checked' : '' }}>
+                                                <label class="custom-control-label" for="amount">Discount by Amount</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="custom-control custom-radio" style="padding-top: 20px">
+                                                <input type="radio" class="custom-control-input" id="percentage"
+                                                    name="discount_by" value="percentage" required {{ old('discount_by') == 'percentage' ? 'checked' : '' }}>
+                                                <label class="custom-control-label" for="percentage">Discount by
+                                                    Percentage</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 discount-container" style="display: none;{{ (old('discount_value') !== null) ? 'display:block !important;' : ''}}">
+                                            <div class="form-group fv-plugins-icon-container">
+                                                <label>Disount Value<span class="text-red">*</span></label>
+                                                <input type="number" min="0" class="form-control form-control-lg" name="discount_value" required value="{{ old('discount_value') }}">
+                                                <span class="form-text text-muted">Discount Value</span>
+                                                @error('discount_value')
+                                                    <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="form-group fv-plugins-icon-container">
+                                    <label>Expiry Date<span class="text-red">*</span></label>
+                                    <input type="data" id="datepicker" class="form-control form-control-lg"
+                                        name="expires_date" autocomplete="no" required value="{{ old('expires_date') }}">
+                                    <span class="form-text text-muted">Voucher Expiry Date</span>
+                                    @error('expires_date')
+                                        <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="form-group">
+                                    <div class="">
+                                        <div class="form-group fv-plugins-icon-container">
+                                            <label>Status</label>
+                                            <select name="status" class="form-control form-control-lg" required>
+                                                <option disabled selected hidden value="">Status...</option>
+                                                <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Active</option>
+                                                <option value="2" {{ old('status') == '2' ? 'selected' : '' }}>Redeemed</option>
+                                            </select>
+                                            <span class="form-text text-muted">Please specify the status
+                                                of the voucher.</span>
+                                            <div class="fv-plugins-message-container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="card-footer">
                                 <div class="row">
                                     <div class="col-6 col-lg-6 text-left">
@@ -145,7 +175,8 @@
                                 </div>
                             </div>
                         </form>
-                    <!--end::Form-->
+                        <!--end::Form-->
+                    </div>
                 </div>
                 <!--end::Card-->
             </div>
@@ -162,22 +193,6 @@
 @endsection
 
 @section('footer')
-    <!--begin::Page Scripts(used by this page)-->
-    <!-- <script src="assets/js/pages/crud/forms/editors/summernote.js"></script> -->
-    <!-- <script src="assets/js/pages/custom/projects/add-project.js"></script> -->
-    <script src="assets/js/pages/crud/forms/widgets/select2.js"></script>
-    <!--end::Page Scripts-->
-    <!--begin::Page Vendors(used by this page)-->
-    <script src="assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
-    <script src="assets/js/pages/crud/forms/editors/ckeditor-classic.js"></script>
-    <!--end::Page Vendors-->
-    <!--begin::Page Scripts(used by this page)-->
-    <!--end::Page Scripts-->
-    <script src="assets/js/pages/crud/forms/widgets/bootstrap-datetimepicker.js"></script>
-
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -194,50 +209,66 @@
     </script>
 
     <script>
-        $(document).ready(function(){
-            $('#firstname').change(function() {
-                var state = $('#firstname').val();
-                $('#phone').html('');
-                $('#email').html('');
-                    $.ajax({
-                    url:'getcustomer/{id}',
-                    type:'GET',
-                    data:{myID:state},
-                    dataType: "json",
-                    success:function(data)
-                    {
-                        $('#phone').val(data.phone_number);
-                        $('#email').val(data.email);
-                        return false;
-                        $.each(data, function(key, phone, email)
-                        {     
-                        $('#phone').prop('disabled', false).css('background','aliceblue').append('<input type="key" value="'+phone.phone_number+'" />');
-                        $('#email').prop('disabled', false).css('background','aliceblue').append('<input type="key" value="'+email.email+'" />');
-                        });
-                    }
-                });
-            });
-        });
 
-        $(document).ready(function(){
-            $('#projectname').change(function() {
-                var state = $('#projectname').val();
-                $('#discount').html('');
+        $(document).ready(function() {
+
+            $('#project_id').on('change', function() {
+                $("#project").attr("disabled", false);
+                let value = $('#project_id').find(":selected").val();
                 $.ajax({
-                    url:'getdiscount/{id}',
-                    type:'GET',
-                    data:{myID:state},
+                    url: 'getprojectunits/' + value,
+                    type: 'GET',
                     dataType: "json",
-                    success:function(data)
-                    {
-                        $('#discount').val(data.discount_price);
-                        return false;
-                        $.each(data, function(key, discount) {
-                            $('#discount').prop('disabled', false).css('background','aliceblue').append('<input type="key" value="'+discount.discount_price+'" />');
+                    success: function(data) {
+                        $('#kt_select2_33').find('option').remove();
+                        $.each(data, function(key, unit) {
+                            let isDisabled = (unit.unit_voucher && unit.unit_voucher.voucher_id !== null) ? 'disabled' : '';
+                            if (isDisabled !== '') {
+                                $("#project").prop('checked', false);
+                                $("#project").attr("disabled", true);
+                            }
+                            $("#kt_select2_33").append('<option value="'+unit.id+'" '+ isDisabled +'>'+unit.title+'</option>');
                         });
+                        $("#kt_select2_33").selectpicker('refresh');
                     }
                 });
             });
-        });
+
+            $('input[name="discount_applied"]').change( function(){
+                if ($('#unit').is(':checked')) {
+                    $('#kt_select2_33'). prop('required',true);
+                    $('.unit-container').show()
+                    $("#kt_select2_33").selectpicker('refresh');
+                }
+                else{
+                    $('#kt_select2_33'). prop('required',false);
+                    $('.unit-container').hide();
+                }
+            });
+
+            $('input[name="discount_by"]').change( function(){
+                if ($('input[name="discount_by"]').is(':checked')) {
+                    $('.discount-container').show();
+                }
+                else{
+                    $('.discount-container').hide();
+                }
+            });
+        });    
     </script>
+
+
+    <!--begin::Page Scripts(used by this page)-->
+    <!-- <script src="assets/js/pages/crud/forms/editors/summernote.js"></script> -->
+    <!-- <script src="assets/js/pages/custom/projects/add-project.js"></script> -->
+    <script src="assets/js/pages/crud/forms/widgets/select2.js"></script>
+    <!--end::Page Scripts-->
+    <!--begin::Page Vendors(used by this page)-->
+    <script src="assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+    <script src="assets/js/pages/crud/forms/editors/ckeditor-classic.js"></script>
+    <!--end::Page Vendors-->
+    <!--begin::Page Scripts(used by this page)-->
+    <!--end::Page Scripts-->
+    <script src="assets/js/pages/crud/forms/widgets/bootstrap-datetimepicker.js"></script>
+
 @endsection
