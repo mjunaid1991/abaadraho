@@ -74,7 +74,7 @@
             <p>Phone: {{ $user->phone_number }}</p>
         </div>
         <div class="container">
-            <p>Use Voucher Code: <span class="promo">{{ $voucher->code }}</span></p>
+            <p>Use Voucher Code: <span class="promo">{{ $code }}</span></p>
             <p class="expire">Expires: {{ date("d-M-Y", strtotime($voucher->expires_at)); }}</p>
         </div>
     </div>

@@ -1,6 +1,6 @@
 <div class="col-lg-12" id="results-data">
 @if(count($projects) > 0)
-    @foreach ($projects as $Pkey => $project)
+    @foreach ($projects as $key => $project)
         <!-- <div class="feat_property list" @if (Auth::id()) onclick="window.location='{{URL::to('/')}}/project/{{ $project->slug }}'" @else data-toggle="modal" class="btn-link-project-detail btn btn-thm float-right" data-target=".bd-example-modal-lg" @endif> -->
             <?php $afterRedirect = "\/project/" . $project->slug ?>
             <div class="feat_property list project_data">
@@ -117,11 +117,11 @@
                                 View Details
                             </a>
                         @else
-                            <a href="/login?ref={!! url('/project/' . $project->slug) !!}" data-toggle="modal" data-target="#myModal" class="btn-link-project-detail btn btn-thm float-right float-lg-right">
+                            <a href="#" data-toggle="modal" data-target="#myModal{{ $key }}" class="btn-link-project-detail btn btn-thm float-right float-lg-right">
                                 View Details
                             </a>
 
-                            <div class="modal fade" id="myModal" role="dialog">
+                            <div class="modal fade" id="myModal{{ $key }}" role="dialog">
                                 <div class="modal-dialog">
                                 <!-- Modal content-->
                                 <div class="modal-content">
@@ -133,7 +133,7 @@
                                         <p>Plesae Sign in before seeing the properties details.</p>
                                     </div>
                                     <div class="modal-footer">
-                                        <a href="/login" class="btn btn-success">Login</a>
+                                        <a href="/login?ref={!! url('/project/' . $project->slug) !!}" class="btn btn-success">Login</a>
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>

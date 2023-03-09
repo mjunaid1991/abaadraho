@@ -65,9 +65,10 @@
                             <thead>
                                 <tr>
                                     <th title="Field #1">#</th>
-                                    <th title="Field #2">Users</th>
-                                    <th title="Field #3">Vouchers</th>
-                                    <th title="Field #4">Redeemed At</th>
+                                    <th title="Field #2">Code</th>
+                                    <th title="Field #3">Users</th>
+                                    <th title="Field #4">Vouchers</th>
+                                    <th title="Field #5">Redeemed At</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -75,8 +76,18 @@
                                     <tr>
                                         <?php $paginationSerial = $user_vouchers->perPage() * ($user_vouchers->currentPage() - 1) + 1; ?>
                                         <td>{{ $paginationSerial + $loop->index }}</td>
-                                        <td>{{ $value->first_name . ' ' . $value->last_name }}</td>
-                                        <td>{{ $value->name }}</td>
+                                        <td>{{ $value->code }}</td>
+                                        <td>{{ $value->user->first_name . ' ' . $value->user->last_name }} <br> {{ $value->user->email }}</td>
+                                        <td>
+                                            {{ $value->voucher->name ?? '' }}<br>
+                                            {{ $value->voucher->project->name ?? '' }}
+                                            @if(isset($value->voucher->discount_applied) && $value->voucher->discount_applied == 'unit')
+                                            <br>
+                                                @foreach ( $value->voucher->units_voucher as $selected_unit)
+                                                <span class="units-span">{{ $selected_unit->unit->title }}</span>
+                                                @endforeach
+                                            @endif
+                                        </td>
                                         <td>{{ $value->redeemed_at }}</td>
                                     </tr>
                                 @endforeach
@@ -101,6 +112,17 @@
         .datatable.datatable-default>.datatable-table>.datatable-head .datatable-row>.datatable-cell:nth-child(1)>span,
         .datatable.datatable-default>.datatable-table>.datatable-body .datatable-row>.datatable-cell:nth-child(1)>span {
             width: 40px !important;
+        }
+        .units-span{
+            padding: 2px 6px;
+            line-height: 24px;
+            border-radius: 4px;
+            background-color: #eb1f29;
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+            position: relative;
+            white-space: pre;
         }
     </style>
 @endsection

@@ -1540,7 +1540,7 @@
 
 @section('footer')
     <script>
-        const CurrentProject = <?php echo json_encode($project); ?>
+        const CurrentProject = {!! json_encode($project) !!};
         const ConstActivtyLogParams = {
             log_name: GetActivityLogNames.viewProjectDetails.value,
             log_table: "projects",
@@ -1551,21 +1551,21 @@
 
         function CreatePageVisitActivityLog() {
             var pageVisitSeconds = 0
+
             window.setInterval(function() {
                 pageVisitSeconds++;
             }, 1000);
-            $(window).on("beforeunload", function() {
-                let params = ConstActivtyLogParams;
-                params.description = CurrentProject.name;
-                params.duration_in_second = pageVisitSeconds;
-                params.conversion_id = ConfigConstants.ActivityLogsConversionIds.viewPageId;
 
-                console.log("beforeunload", true);
+            // $(window).on("beforeunload", function() {
+            let params = ConstActivtyLogParams;
+            params.description = CurrentProject.name;
+            params.duration_in_second = pageVisitSeconds;
+            params.conversion_id = ConfigConstants.ActivityLogsConversionIds.viewPageId;
 
-                CallLaravelAction("/create/custom-activity-log", params, function(response) {
-                    console.log("Insert page visit log");
-                });
-            });
+            // console.log("beforeunload", true);
+
+            CallLaravelAction("/create/custom-activity-log", params);
+            // });
         }
     </script>
     <script>
@@ -1621,6 +1621,9 @@
     <script>
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
+            $('.number1').on('input', function() {
+                $(this).val($(this).val().replace(/[^0-9]/g, ''));
+            })
         });
 
         $(function() {

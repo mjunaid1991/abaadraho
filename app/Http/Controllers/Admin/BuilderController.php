@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Builder;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuilderRequest;
@@ -37,7 +38,8 @@ class BuilderController extends Controller
    */
   public function create()
   {
-    return view('panel.admin.builder.create');
+    $builders = User::where('user_type_id', '-10025')->get();
+    return view('panel.admin.builder.create', compact('builders'));
   }
 
   /**
@@ -48,11 +50,22 @@ class BuilderController extends Controller
    */
   public function store(BuilderRequest $request)
   {
+    $validated = $request->validate([
+      'full_name'                   =>  'required',
+      'contact_person_email'        =>  'required | unique:builders',
+      'contact_person_name'         =>  'required',
+      'contact_person_phone_number' =>  'required',
+    ]);
+
+    $user = User::find($request->contact_person_email);
+
     Builder::create([
       'full_name' => $request->full_name,
+      'user_id' => $user->id,
+      'email' => $user->email,
       'contact_person_name' => $request->contact_person_name,
-      'contact_person_email' => $request->contact_person_email,
-      'contact_person_phone_number' => $request->contact_person_phone_number,
+      'contact_person_email' => $user->email,
+      'contact_person_phone_number' => $request->contact_person_phone_number
     ]);
 
     return redirect('/admin/builder');
@@ -162,3 +175,4 @@ class BuilderController extends Controller
     }
   }
 }
+?>

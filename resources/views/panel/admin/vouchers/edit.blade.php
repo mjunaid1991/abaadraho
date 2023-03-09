@@ -51,7 +51,7 @@
                   @enderror
               </div>
             </div>
-            <div class="col-xl-12">
+            {{-- <div class="col-xl-12">
               <div class="form-group fv-plugins-icon-container">
                   <label>Voucher Code<span class="text-red">*</span></label>
                   <input type="text" class="form-control form-control-lg" name="code" value="{{ $voucher->code }}" required readonly>
@@ -60,7 +60,7 @@
                       <div class="fv-plugins-message-container text-danger">{{ $message }}</div>
                   @enderror
               </div>
-            </div>
+            </div> --}}
             <div class="col-xl-12">
               <div class="form-group fv-plugins-icon-container">
                   <label>Project Name<span class="text-red">*</span></label>
@@ -171,7 +171,7 @@
                           <select name="status" class="form-control form-control-lg" required>
                               <option disabled selected hidden value="">Status...</option>
                               <option value="1" {{ $voucher->status == '1' ? 'selected' : '' }}>Active</option>
-                              <option value="2" {{ $voucher->status == '0' ? 'selected' : '' }}>Redeemed</option>
+                              <option value="2" {{ $voucher->status == '0' ? 'selected' : '' }}>Disable</option>
                           </select>
                           <span class="form-text text-muted">Please specify the status
                               of the voucher.</span>

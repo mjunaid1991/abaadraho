@@ -71,7 +71,7 @@
                             <thead>
                                 <tr>
                                     <th title="Field #1" style="width:20px">#</th>
-                                    <th title="Field #2">Code</th>
+                                    {{-- <th title="Field #2">Code</th> --}}
                                     <th title="Field #3">Name</th>
                                     <th title="Field #4">Project</th>
                                     <th title="Field #5">Discount</th>
@@ -86,7 +86,7 @@
                                     <tr>
                                       <input type="hidden" class="serdelete_val" value="{{ $voucher->id }}">
                                       <td>{{ $loop->index + 1 }}</td>
-                                      <td>{{ $voucher->code }}</td>
+                                      {{-- <td>{{ $voucher->code }}</td> --}}
                                       <td>{{ $voucher->name }}</td>
                                       <td>{{ $voucher->project->name ?? '' }}
                                         @if($voucher->discount_applied == 'unit')

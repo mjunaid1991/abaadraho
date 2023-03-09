@@ -299,7 +299,7 @@
                                                     View Details
                                                 </a>
                                             @else
-                                                <a href='/login?ref={!! url("/project/" . $featured->slug) !!}' data-toggle="modal" data-target="#myModal" class="btn-link-project-detail btn btn-thm float-right float-lg-right">
+                                                <a href='#' data-toggle="modal" data-target="#myModal" data-slug="{!! url("/project/". $featured->slug) !!}" class="btn-link-project-detail btn btn-thm float-right float-lg-right btn-modal">
                                                     View Details
                                                 </a>
                                             @endif
@@ -683,7 +683,7 @@
                     <p>Plesae Sign in before seeing the properties details.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="/login" class="btn btn-success">Login</a>
+                    <a href="/login" class="btn btn-success" id="modal-login-btn">Login</a>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -699,8 +699,14 @@
 @section('footer')
     @include('projects.scripts.search_fields_with_select2_script')
     <script>
-
+        
         $(document).ready(function () {
+            
+            $('.btn-modal').click(function() {
+                var slug = $(this).data('slug');
+                $('#modal-login-btn').attr('href', "/login?ref="+slug);
+            });
+            
             getData([], true, `${location.search.replace('?', '')}&_token={!! csrf_token() !!}`)
 
             $('.add-to-wishlist-btn').click(function (e) {

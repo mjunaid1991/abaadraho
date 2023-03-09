@@ -44,7 +44,7 @@
                 <span class="form-text text-muted">Please enter the builder's
                   Name.</span>
                 @error('full_name')
-                <div class="fv-plugins-message-container">{{ $errors->first('full_name') }}</div>
+                <div class="fv-plugins-message-container">{{ $message }}</div>
                 @enderror
               </div>
             </div>
@@ -55,17 +55,24 @@
                 <span class="form-text text-muted">Please enter the contact person's
                   Name.</span>
                 @error('contact_person_name')
-                <div class="fv-plugins-message-container">{{ $errors->first('contact_person_name') }}</div>
+                <div class="fv-plugins-message-container">{{ $message }}</div>
                 @enderror
               </div>
             </div>
             <div class="col-xl-8">
               <div class="form-group fv-plugins-icon-container">
-                <label>Email</label>
-                <input type="email" class="form-control form-control-lg" name="contact_person_email">
-                <span class="form-text text-muted">Please enter the contact person's Email.</span>
+                <label class="d-block">Select User</label>
+                <select name="contact_person_email" class="form-control" required>
+                  <option selected value="">Select User</option>
+                  @foreach($builders as $builder)
+                  <option value="{{ $builder->id }}" >
+                    {{ $builder->email }}
+                  </option>
+                  @endforeach
+                </select>
+                <span class="form-text text-muted">Please select builder email from user.</span>
                 @error('contact_person_email')
-                <div class="fv-plugins-message-container">{{ $errors->first('contact_person_email') }}</div>
+                <div class="fv-plugins-message-container">{{ $message }}</div>
                 @enderror
               </div>
             </div>
@@ -73,10 +80,10 @@
               <div class="form-group fv-plugins-icon-container">
                 <label class="d-block">Phone</label>
                 {{-- <input type="text" class="form-control form-control-lg" name="full_name" required> --}}
-                <input id="contact_person_phone_number" type="tel" class="form-control h50 pretext-phone-number mt20" name="contact_person_phone_number" style="width:100% !important" />
+                <input id="contact_person_phone_number" type="tel" class="form-control form-control-lg" name="contact_person_phone_number" style="width:100% !important" />
                 <span class="form-text text-muted">Please enter the contact person's Phone Number.</span>
                 @error('contact_person_phone_number')
-                <div class="fv-plugins-message-container">{{ $errors->first('contact_person_phone_number') }}</div>
+                <div class="fv-plugins-message-container">{{ $message }}</div>
                 @enderror
               </div>
             </div>

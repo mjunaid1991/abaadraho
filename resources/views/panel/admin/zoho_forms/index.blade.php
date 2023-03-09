@@ -292,7 +292,7 @@
                                             <td>{{ $inquiry->email }}</td>
                                             <td>{{ $inquiry->phone_number }}</td>
                                             <td>{{ $inquiry->address }}</td>
-                                            <td>{{ $inquiry->project->name }}</td>
+                                            <td>{{ $inquiry->project->name ?? ''}}</td>
                                             <td>{{ $inquiry->unit->title }}</td>
                                             {{-- <td>{{ $units[$record->unit_id - 1]->title }}</td> --}}
                                             <td><a href="/admin/listing/{{ $inquiry->id }}"><i

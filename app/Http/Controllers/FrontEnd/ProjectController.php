@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Activitylog\Models\Activity;
 use PDF;
+use Illuminate\Support\Str;
 
 class ProjectController extends BaseController
 {
@@ -67,12 +68,17 @@ class ProjectController extends BaseController
 
     public function detail(Request $request, $slug)
     {
+
         $project = $this->ProjectModel->with('units', 'owners', 'location', 'project_info')->where('slug', $slug)->first();
-        // $user_voucher = DB::table('user_voucher')->where('voucher_id', $project->id)->exists();
-        // $voucher_available = Voucher::where('project_id', $project->id)->exists();
-        $voucher_available = Voucher::with('project', 'units_voucher.unit')->where('project_id', $project->id)->get();
-        // dd(count($voucher_available) > 0);
         $auth_id = Auth::id();
+        $voucher_available = Voucher::with('project', 'units_voucher.unit', 'user_voucher')
+            ->where('project_id', $project->id)
+            ->where('expires_at', '>', date('Y-m-d H:i:s'))
+            ->whereDoesntHave('user_voucher', function ($query) use ($auth_id)  {
+                $query->where('user_id', $auth_id);
+            })
+            ->get();
+
         $view_key = 'project_'.$project->id;
         if(!request()->session()->has($view_key))
         {
@@ -159,17 +165,26 @@ class ProjectController extends BaseController
     public function generate_voucher(Request $request)
     {
 
-        $validated = $request->validate([
-            'voucher_id' => 'required',
-        ],
-        ['voucher_id.required' => 'Invalid argument try again.']);
+        $validated = $request->validate(
+            ['voucher_id' => 'required',],
+            ['voucher_id.required' => 'Invalid argument try again.']
+        );
+
+        do {
+            $code = strtoupper(Str::random(3) . '-' . Str::random(3));
+        } while (UserVoucher::where('code', $code)->exists());
 
         $voucher_id = $request->voucher_id;
+        $user = User::where('id', Auth::id())->first();
         $voucher = Voucher::with('project', 'units_voucher.unit')->where('id', $voucher_id)->first();
 
-        $user = User::where('id', Auth::id())->first();
-
-        $pdf = PDF::loadView('panel.admin.vouchers.coupon', compact('voucher', 'user'));
+        $user_voucher = UserVoucher::create([
+            'code'        =>   $code,
+            'user_id'     =>   $user->id,
+            'voucher_id'  =>   $voucher_id
+        ]);
+        
+        $pdf = PDF::loadView('panel.admin.vouchers.coupon', compact('voucher', 'user', 'code'));
         return $pdf->download('Coupon.pdf');
 
         // return $pdf->download('Coupon.pdf');

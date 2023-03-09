@@ -420,7 +420,7 @@
                             -
                           @endif
                         </td>
-                      <td>{{ \App\Models\Project::where(['id' => $paymentSchedule->project_id])->pluck('name')[0] }}</td> 
+                      <td>{{ \App\Models\Project::where(['id' => $paymentSchedule->project_id])->pluck('name')[0] ?? ''}}</td> 
                         <td>
                           {{ optional($paymentSchedule->unit)->title }}
                         </td>

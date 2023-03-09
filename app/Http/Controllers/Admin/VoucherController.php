@@ -35,7 +35,7 @@ class VoucherController extends Controller
     public function index() {
         
         $status = [
-            'Redeemed',
+            'Disable',
             'Active'
         ];
         $vouchers = Voucher::with('project','units_voucher.unit');
@@ -53,24 +53,30 @@ class VoucherController extends Controller
     public function downloadedVoucherList(Request $request)
     {
         $perPageRecord = 100;
-        // $user_vouchers = UserVoucher::orderBy('created_at', 'DESC')->paginate($perPageRecord);
+        $user_vouchers = UserVoucher::with('user', 'voucher.units_voucher.unit', 'voucher.project')
+            ->orderBy('created_at', 'DESC');
 
-        $user_vouchers = UserVoucher::select(
-                    "users.id", 
-                    "users.first_name",
-                    "users.last_name",
-                    "projects.name",
-                    "user_voucher.redeemed_at"
-                )
-                ->leftJoin("users", "users.id", "=", "user_voucher.user_id")
-                ->leftJoin("projects", "projects.id", "=", "user_voucher.voucher_id")
-                ->paginate($perPageRecord);
+        if (Auth::user()->user_type_id == Config::get("constants.UserTypeIds.Builder")) {
+            $builder = Builder::where("user_id", Auth::user()->id)->first();
+            $builderProjectIds = ProjectOwners::where("builder_id", $builder->id)->pluck("project_id");
+            $user_vouchers = $user_vouchers->whereIn("voucher.project_id", $builderProjectIds->toArray());
+        }
+
+        $user_vouchers = $user_vouchers->paginate($perPageRecord);
   
         return view('panel.admin.vouchers.downloaded-voucher', compact('user_vouchers'));
     }
 
     public function create() {
-        $projects = Project::with('ProjectVoucher')->get();
+
+        $projects = Project::with('ProjectVoucher');
+        if (Auth::user()->user_type_id == Config::get("constants.UserTypeIds.Builder")) {
+            $Builder = Builder::where("user_id", Auth::user()->id)->first();
+            $BuilderProjectIds = ProjectOwners::where("builder_id", $Builder->id)->pluck("project_id");
+            $projects = $projects->whereIn("id", $BuilderProjectIds->toArray());
+        }
+        $project = $project->get();
+
         return view('panel.admin.vouchers.create', compact('projects'));
     }
 
@@ -82,7 +88,7 @@ class VoucherController extends Controller
             'discount_by'       =>   'required',
             'discount_applied'  =>   'required',
             'discount_value'    =>   'required',
-            'code'              =>   'required|unique:vouchers',
+            // 'code'              =>   'required|unique:vouchers',
             'status'            =>   'required',
             'expires_date'      =>   'required'
         ]);
@@ -93,9 +99,9 @@ class VoucherController extends Controller
             'discount_by'       =>   $request->discount_by,
             'discount_applied'  =>   $request->discount_applied,
             'discount_value'    =>   $request->discount_value,
-            'code'              =>   $request->code,
+            // 'code'              =>   $request->code,
             'status'            =>   $request->status == "2" ?  '0' : '1',
-            'expires_at'        =>   $request->expires_date
+            'expires_at'        =>   date('Y-m-d H:i:s', strtotime($request->expires_date))
         ]);
 
         if($request->discount_applied == "unit")
@@ -133,7 +139,7 @@ class VoucherController extends Controller
             'discount_by'       =>   'required',
             'discount_applied'  =>   'required',
             'discount_value'    =>   'required',
-            'code'              =>   'required',
+            // 'code'              =>   'required',
             'status'            =>   'required',
             'expires_date'      =>   'required'
         ]);
@@ -144,9 +150,9 @@ class VoucherController extends Controller
         $voucher->discount_by      =  $request->discount_by;
         $voucher->discount_applied =  $request->discount_applied;
         $voucher->discount_value   =  $request->discount_value;
-        $voucher->code             =  $request->code;
+        // $voucher->code             =  $request->code;
         $voucher->status           =  $request->status == "2" ?  '0' : '1';
-        $voucher->expires_at       =  $request->expires_date;
+        $voucher->expires_at       =  date('Y-m-d H:i:s', strtotime($request->expires_date));
         $voucher->save();
         $voucher->touch();
 

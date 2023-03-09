@@ -10,6 +10,9 @@ use Faker\Provider\ar_SA\Payment;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
+use Illuminate\Support\Facades\Config;
+use App\Models\Builder;
+use App\Models\ProjectOwners;
 
 class PaymentScheduleController extends Controller
 {
@@ -26,6 +29,13 @@ class PaymentScheduleController extends Controller
         $searchQuery = [];
         
         $paymentSchedules = PaymentSchedule::orderBy("created_at", "DESC");
+
+        if (Auth::user()->user_type_id == Config::get("constants.UserTypeIds.Builder")) {
+            $Builder = Builder::where("user_id", Auth::user()->id)->first();
+            $BuilderProjectIds = ProjectOwners::where("builder_id", $Builder->id)->pluck("project_id");
+            $paymentSchedules = $paymentSchedules->whereIn("project_id", $BuilderProjectIds->toArray());
+        }
+
         if ($request['project_id']) {
             foreach($request['project_id'] as $project){
                 $paymentSchedules = $paymentSchedules->where('project_id', $project);
@@ -119,3 +129,4 @@ class PaymentScheduleController extends Controller
         return view('panel.admin.payment_schedule.show', compact('paymentSchedule', 'paymentData'));
     }
 }
+?>

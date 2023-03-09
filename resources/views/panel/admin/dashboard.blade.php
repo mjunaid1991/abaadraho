@@ -56,7 +56,6 @@
                     </div>
                 </a>
             </div>
-            @endif
             <div class="col-sm-6 col-md-3">
             <a href="/admin/cutomers">
                 <div class="dashboard-report-card card info">
@@ -70,6 +69,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <div class="col-sm-6 col-md-3">
             <a href="/admin/favorites">
                 <div class="dashboard-report-card card success">
