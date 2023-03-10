@@ -75,7 +75,7 @@ class VoucherController extends Controller
             $BuilderProjectIds = ProjectOwners::where("builder_id", $Builder->id)->pluck("project_id");
             $projects = $projects->whereIn("id", $BuilderProjectIds->toArray());
         }
-        $project = $project->get();
+        $projects = $projects->get();
 
         return view('panel.admin.vouchers.create', compact('projects'));
     }
