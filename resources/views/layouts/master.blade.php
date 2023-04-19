@@ -101,7 +101,7 @@
                          src="/assets/images/mark-properties-logo.svg?v={!! time() !!}"
                          alt="Mark Properties"> -->
                     <img class="logo1 abadraho img-fluid"
-                         src="https://markproperties.pk/karachi-underconstruction/img/mainlogo.webp" alt="Abad Raho">
+                         src="https://markproperties.pk/projects-all/wp-content/themes/markproperties/assets/images/logo.png" alt="Abad Raho">
                 <!-- <img class="logo2 img-fluid"
                          src="/assets/images/mark-properties-logo.svg?v={!! time() !!}" alt="Abad Raho">
                     <img class="logo2 img-fluid" src="/assets/images/abadraho-logo.svg?v={!! time() !!}"

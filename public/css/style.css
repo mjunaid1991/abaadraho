@@ -1301,7 +1301,8 @@ span.select2-selection.select2-selection--multiple {
 
 @media (min-width: 992px) {
     .navbar_brand .abadraho {
-        width: 50%;
+        /* width: 50%; */
+        width: 100%;
     }
 
     .large-disable {
