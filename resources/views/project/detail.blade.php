@@ -1297,7 +1297,7 @@
                                                         @foreach ($voucher_available as $voucher)
                                                         @php $voucher_id = $voucher->id @endphp
                                                         @foreach ( $voucher->units_voucher as $selected_unit)
-                                                        <option value="{{ $voucher_id }}">{{ $selected_unit->unit->title }}</option>
+                                                        <option value="{{ $voucher->id }}, {{ $selected_unit->unit->title }}">{{ $selected_unit->unit->title }}</option>
                                                         @endforeach
                                                         @endforeach
                                                     </select>

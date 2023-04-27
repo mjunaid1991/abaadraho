@@ -32,15 +32,16 @@
             color: red;
         }
         .units-span{
-            padding: 2px 6px;
-            line-height: 24px;
-            border-radius: 4px;
+            padding: 2px 25px;
+            line-height: 35px;
+            /*border-radius: 4px;*/
+            height: 25px;
             background-color: #eb1f29;
             color: #fff;
             font-weight: 700;
             font-size: 14px;
-            position: relative;
-            white-space: pre;
+            /*position: relative;*/
+            /*white-space: pre;*/
         }
     </style>
 </head>
@@ -65,9 +66,7 @@
             ?>
             <h2><b>{{ $voucher_value }} OFF on {{ $voucher->project->name }}</b></h2>
 
-            @foreach ($voucher->units_voucher as $voucher_unit)
-                <span class="units-span">{{ $voucher_unit->unit->title }}</span>
-            @endforeach
+            <span class="units-span">{{ $unit }}</span>
 
             <p>Username: {{ $user->first_name }} {{ $user->last_name }}</p>
             <p>Email: {{ $user->email }}</p>

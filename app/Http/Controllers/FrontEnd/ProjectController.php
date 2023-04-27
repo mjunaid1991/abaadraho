@@ -175,6 +175,9 @@ class ProjectController extends BaseController
         } while (UserVoucher::where('code', $code)->exists());
 
         $voucher_id = $request->voucher_id;
+        $voucher_data = explode(",", $voucher_id);
+        $voucher_id = $voucher_data[0];
+        $unit = $voucher_data[1];        
         $user = User::where('id', Auth::id())->first();
         $voucher = Voucher::with('project', 'units_voucher.unit')->where('id', $voucher_id)->first();
 
@@ -184,7 +187,7 @@ class ProjectController extends BaseController
             'voucher_id'  =>   $voucher_id
         ]);
         
-        $pdf = PDF::loadView('panel.admin.vouchers.coupon', compact('voucher', 'user', 'code'));
+        $pdf = PDF::loadView('panel.admin.vouchers.coupon', compact('voucher', 'user', 'code', 'unit'));
         return $pdf->download('Coupon.pdf');
 
         // return $pdf->download('Coupon.pdf');
