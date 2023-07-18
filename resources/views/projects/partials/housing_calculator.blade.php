@@ -5,7 +5,7 @@
     <div class="sidebar_advanced_search_widget">
         <div class="row">
             <div class="col-md-12">
-                {{--                <img src="http://markproperties.pk/projects/wp-content/uploads/2021/03/download.png" class="img-responsive gar1 cal_img">--}}
+                {{-- <img src="http://markproperties.pk/projects/wp-content/uploads/2021/03/download.png" class="img-responsive gar1 cal_img"> --}}
                 <p class="text-center fz20">
                     <strong>My Budget</strong><br>
                     <strong>Rs. <span id="cal-result">{!! round($searchData['maxBudget'] ?? 0) !!}</span></strong>
